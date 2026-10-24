@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.lakehouse/
+evals/results/*.json
+evals/results/oracle-*
+evals/results/dont-know-*

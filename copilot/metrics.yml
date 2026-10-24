@@ -1,0 +1,77 @@
+# Semantic layer: business metrics with one agreed definition each.
+# The agent is told to prefer these over writing its own SQL, so "revenue"
+# means the same thing in every answer.
+#
+#   table:       schema-qualified source table
+#   expression:  aggregate SQL over that table
+#   date_column: column used for start_date / end_date filters (optional)
+#   dimensions:  columns the metric can be broken down by
+
+revenue:
+  description: Revenue from paid (authorized) orders, in USD.
+  table: gold.fct_order_items
+  expression: sum(line_total) filter (where is_paid)
+  date_column: order_date
+  dimensions: [category, product_id]
+
+orders:
+  description: Number of orders placed, paid or not.
+  table: gold.fct_orders
+  expression: count(*)
+  date_column: order_date
+  dimensions: [payment_status, payment_method]
+
+paid_orders:
+  description: Number of orders whose latest payment was authorized.
+  table: gold.fct_orders
+  expression: count(*) filter (where is_paid)
+  date_column: order_date
+  dimensions: [payment_method]
+
+average_order_value:
+  description: Average value of a paid order, in USD.
+  table: gold.fct_orders
+  expression: round(sum(order_total) filter (where is_paid) / nullif(count(*) filter (where is_paid), 0), 2)
+  date_column: order_date
+  dimensions: [payment_method]
+
+sessions:
+  description: Number of shopping sessions.
+  table: gold.fct_sessions
+  expression: count(*)
+  date_column: session_date
+  dimensions: []
+
+conversion_rate:
+  description: Share of sessions that ended in a paid order (0 to 1).
+  table: gold.fct_sessions
+  expression: round(avg(case when paid then 1.0 else 0.0 end), 4)
+  date_column: session_date
+  dimensions: []
+
+cart_rate:
+  description: Share of sessions that added something to the cart (0 to 1).
+  table: gold.fct_sessions
+  expression: round(avg(case when added_to_cart then 1.0 else 0.0 end), 4)
+  date_column: session_date
+  dimensions: []
+
+customers:
+  description: Number of distinct shoppers seen.
+  table: gold.dim_customers
+  expression: count(*)
+  dimensions: [segment]
+
+rejected_events:
+  description: Events rejected by the data contracts.
+  table: monitoring.contract_rejections
+  expression: sum(rejected_events)
+  date_column: day
+  dimensions: [event_type, failed_field]
+
+reject_rate:
+  description: Share of incoming events rejected by the data contracts (0 to 1).
+  table: monitoring.pipeline_health
+  expression: round(sum(rejected_rows) / nullif(sum(bronze_rows) + sum(rejected_rows), 0), 4)
+  date_column: day
+  dimensions: []

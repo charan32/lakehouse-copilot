@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "lakehouse-copilot": {
+      "command": "/ABSOLUTE/PATH/TO/lakehouse-copilot/.venv/bin/python",
+      "args": ["-m", "copilot.server"],
+      "cwd": "/ABSOLUTE/PATH/TO/lakehouse-copilot",
+      "env": {
+        "LAKEHOUSE_DB": "/ABSOLUTE/PATH/TO/lakehouse-copilot/.lakehouse/streaming-lakehouse/dbt/target/lakehouse.duckdb"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -r requirements-dev.txt
+      - name: Build the lakehouse data (streaming-lakehouse, local mode)
+        run: make demo-data
+      - name: Tests (guardrails, MCP server, providers, eval harness)
+        run: make test
+      - name: Eval harness self-test
+        run: make eval-selftest
