@@ -19,7 +19,8 @@ import yaml
 
 from . import guard
 
-DEFAULT_DB = "../streaming-lakehouse/dbt/target/lakehouse.duckdb"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_DB = str(REPO_ROOT / ".lakehouse" / "streaming-lakehouse" / "dbt" / "target" / "lakehouse.duckdb")
 QUERY_TIMEOUT_S = float(os.getenv("COPILOT_QUERY_TIMEOUT", "10"))
 METRICS_FILE = Path(__file__).with_name("metrics.yml")
 

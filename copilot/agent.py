@@ -12,6 +12,7 @@ exactly as Claude Desktop or Cursor would. Every tool call is recorded in
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from contextlib import AsyncExitStack
@@ -74,7 +75,9 @@ class Copilot:
         self.provider = provider
         self.max_turns = max_turns
         self.server_cmd = server_cmd or [sys.executable, "-m", "copilot.server"]
-        self.env = env
+        # The MCP stdio client passes only a minimal environment to the server by
+        # default, so forward ours: LAKEHOUSE_DB and friends must reach the server.
+        self.env = {**os.environ, **(env or {})}
         self._stack = AsyncExitStack()
         self.session: ClientSession | None = None
         self.tools: list[dict] = []

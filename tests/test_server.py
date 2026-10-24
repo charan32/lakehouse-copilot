@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 import pytest
@@ -9,7 +10,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_mcp_server_over_stdio():
-    params = StdioServerParameters(command=sys.executable, args=["-m", "copilot.server"])
+    params = StdioServerParameters(command=sys.executable, args=["-m", "copilot.server"], env=dict(os.environ))
     async with stdio_client(params) as (r, w), ClientSession(r, w) as s:
         await s.initialize()
         names = {t.name for t in (await s.list_tools()).tools}
